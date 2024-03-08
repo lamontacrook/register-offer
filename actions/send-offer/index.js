@@ -18,6 +18,68 @@ const fetch = require('node-fetch')
 const { Core } = require('@adobe/aio-sdk')
 const { errorResponse, getBearerToken, getApiKey, getImsOrg, getSandbox, stringParameters, checkMissingRequestInputs } = require('../utils')
 
+function createPayload({ offerName, offer, startDate, endDate, group, priority }) {
+  const placements = [
+    'xcore:offer-placement:1882a924fc751e7e',
+    'xcore:offer-placement:1882a9421d144edc',
+    'xcore:offer-placement:1882a96401422d49',
+    'xcore:offer-placement:1882a98432830ed5',
+    'xcore:offer-placement:1882a9e332042f9d',
+    'xcore:offer-placement:1882aa05cb535909'
+  ];
+
+  const representations = placements.map((item) => {
+    return {
+      "channel": "https://ns.adobe.com/xdm/channel-types/web",
+      "placement": item,
+      "components": [
+        {
+          "type": "https://ns.adobe.com/experience/offer-management/content-component-text",
+          "format": "text/plain",
+          "language": [
+            "en-us"
+          ],
+          "content": offer
+        }
+      ]
+    }
+  });
+
+  return {
+    "name": offerName,
+    "status": "draft",
+    "representations": representations,
+    "selectionConstraint": {
+      "startDate": startDate,
+      "endDate": endDate,
+      "profileConstraintType": "none"
+    },
+    "rank": {
+      "priority": 0
+    },
+    "xdm:characteristics": {
+      "category": group,
+      "priority": priority
+    },
+    "cappingConstraint": {},
+    "frequencyCappingConstraints": [
+      {
+        "enabled": false,
+        "limit": 1,
+        "startDate": startDate,
+        "endDate": endDate,
+        "scope": "global",
+        "entity": "offer",
+        "repeat": {
+          "enabled": false,
+          "unit": "month",
+          "unitCount": 1
+        }
+      }
+    ]
+  };
+}
+
 async function main(params) {
 
   const logger = Core.Logger('main', { level: params.LOG_LEVEL || 'info' })
@@ -26,7 +88,7 @@ async function main(params) {
     logger.info('Calling the main action');
     // logger.debug(stringParameters(params));
 
-    const requiredParams = ['startDate', 'endDate', 'offer'];
+    const requiredParams = ['startDate', 'endDate', 'offer', 'offerName', 'fragmentPath', 'altHeaders', 'aemHost', 'model', 'priority', 'group'];
     const requiredHeaders = ['Authorization'];
     const errorMessage = checkMissingRequestInputs(params, requiredParams, requiredHeaders);
     const token = getBearerToken(params);
@@ -40,53 +102,17 @@ async function main(params) {
 
     if (errorMessage) return errorResponse(400, 'oops ' + errorMessage, logger);
 
-    const { startDate, endDate, offer } = params;
+    const { fragmentPath, altHeaders, aemHost, model } = params;
 
-    const payload = {
-      "name": "BBW Test 1",
-      "status": "draft",
-      "representations": [
-        {
-          "channel": "https://ns.adobe.com/xdm/channel-types/web",
-          "placement": "xcore:offer-placement:15dc0f34728a742a",
-          "components": [
-            {
-              "type": "https://ns.adobe.com/experience/offer-management/content-component-text",
-              "format": "text/plain",
-              "language": [
-                "en-us"
-              ],
-              "content": offer
-            }
-          ]
-        }
-      ],
-      "selectionConstraint": {
-        "startDate": "2022-07-27T05:00:00.000+00:00",
-        "endDate": "2023-07-29T05:00:00.000+00:00",
-        "profileConstraintType": "none"
-      },
-      "rank": {
-        "priority": 0
-      },
-      "cappingConstraint": {},
-      "frequencyCappingConstraints": [
-        {
-          "enabled": false,
-          "limit": 1,
-          "startDate": "2024-05-15T14:25:49.622+00:00",
-          "endDate": "2024-05-25T14:25:49.622+00:00",
-          "scope": "global",
-          "entity": "offer",
-          "repeat": {
-            "enabled": false,
-            "unit": "month",
-            "unitCount": 1
-          }
-        }
-      ]
-    };
+    const payload = createPayload(params);
 
+    logger.info(JSON.stringify(payload));
+
+    // const _ret = {
+    //   statusCode: 200,
+    //   body: JSON.stringify(payload)
+    // };
+    // return _ret;
 
     const apiEndpoint = 'https://platform.adobe.io/data/core/dps/offers?offer-type=personalized';
 
@@ -95,9 +121,9 @@ async function main(params) {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
-        'x-api-key': '3af35f9c2dac45008506d484731aba13',
-        'x-gw-ims-org-id': '120A56765E16E7BE0A495FEB@AdobeOrg',
-        'x-sandbox-name': 'kabbeysbox'
+        'x-api-key': apiKey,
+        'x-gw-ims-org-id': imsOrg,
+        'x-sandbox-name': sandbox
       },
       body: JSON.stringify(payload)
     });
@@ -106,9 +132,36 @@ async function main(params) {
       throw new Error('request to ' + apiEndpoint + ' failed with status code ' + res.status)
     }
     const content = await res.json();
+    const ret = {
+      content: content
+    };
+    
+    if (content) {
+      const _payload = {
+        "properties": {
+          "cq:model": model,
+          "elements": {
+            "offerDelivery": {
+              "value": JSON.stringify(content)
+            },
+          }
+        }
+      };
+
+      const cfPath = fragmentPath.replace('/content/dam', '/api/assets');
+
+      const frag = await fetch(aemHost + cfPath, {
+        method: 'put',
+        headers: JSON.parse(altHeaders),
+        body: JSON.stringify(_payload)
+      });
+      ret['cf'] = await frag.json();
+    } else
+      throw new Error('request to update OD failed');
+
     const response = {
       statusCode: 200,
-      body: content
+      body: ret
     };
 
     logger.info(`${response.statusCode}: successful request`)

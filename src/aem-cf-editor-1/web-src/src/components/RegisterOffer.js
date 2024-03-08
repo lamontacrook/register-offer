@@ -1,32 +1,21 @@
-/*
- * <license header>
- */
-
-//https://bbw-demo.vercel.app/preview/promo/content/dam/bbw/site/en/home/components/hand-soap
-//https://bbw-demo.vercel.app/preview/promo/content/dam/bbw/site/en/home/components/hand-soap
-
 import React, { useState, useEffect } from "react";
 import { attach } from "@adobe/uix-guest";
 import {
   Flex,
   Provider,
-  Content,
   View,
   defaultTheme,
   Text,
   ButtonGroup,
-  SearchField,
-  ActionButton,
-  ListView,
   Item,
-  Divider,
   Tabs,
   TabList,
   TabPanels,
   Button,
   TextArea,
   TextField,
-  Form
+  Form,
+  Well
 } from "@adobe/react-spectrum";
 import actionWebInvoke from '../utils';
 import ApplicationDelivery from "@spectrum-icons/workflow/ApplicationDelivery";
@@ -34,22 +23,61 @@ import Login from "@spectrum-icons/workflow/Login";
 import FileHTML from "@spectrum-icons/workflow/FileHTML";
 import allActions from '../config.json';
 import { extensionId } from "./Constants";
+import { srcSet, sizes } from '../responsive-image';
 
-const _token = 'eyJhbGciOiJSUzI1NiIsIng1dSI6Imltc19uYTEta2V5LWF0LTEuY2VyIiwia2lkIjoiaW1zX25hMS1rZXktYXQtMSIsIml0dCI6ImF0In0.eyJpZCI6IjE3MDk4NjU3NTYxMjRfMjhlYTNjNDctMzhhNC00ODBmLTg4ZTItODhiOWI5Njc1ZGUzX3V3MiIsInR5cGUiOiJhY2Nlc3NfdG9rZW4iLCJjbGllbnRfaWQiOiJleGNfYXBwIiwidXNlcl9pZCI6IkFFOTQxRTRDNjVFODlCMDYwQTQ5NUY4OUA4MWZiMWY3NzYzMWMwNDg4NDk1YzUwLmUiLCJzdGF0ZSI6IntcInNlc3Npb25cIjpcImh0dHBzOi8vaW1zLW5hMS5hZG9iZWxvZ2luLmNvbS9pbXMvc2Vzc2lvbi92MS9ZV1JsTWpJM056a3RNekl4WmkwME1UVXdMVGcxTXpRdE1qVTRaall6TldVME9UTm1MUzAzTUVNMk1VUkdNalkxTVRjeU9VVkRNRUUwT1RWRE1EUkFOV0poTnpGbE9ETTJOVEUyWkRkak9EUTVOV000T1M1bFwifSIsImFzIjoiaW1zLW5hMSIsImFhX2lkIjoiNkI2QjM5Rjc1NkFCQjk5RTdGMDAwMTAxQGFkb2JlLmNvbSIsImN0cCI6MCwiZmciOiJZSUxFRVFHT1hQUDdNSFVLSE1RVjJYQUE1WT09PT09PSIsInNpZCI6IjE3MDk4MzI1MjU3MjdfYzI2ZGI2YjUtYzlhOC00Yjk1LThiNDEtNzE3YzM4ZjE1Mjc1X3V3MiIsIm1vaSI6IjYxYmVmNGJhIiwicGJhIjoiTWVkU2VjTm9FVixMb3dTZWMiLCJleHBpcmVzX2luIjoiODY0MDAwMDAiLCJjcmVhdGVkX2F0IjoiMTcwOTg2NTc1NjEyNCIsInNjb3BlIjoiYWIubWFuYWdlLGFjY291bnRfY2x1c3Rlci5yZWFkLGFkZGl0aW9uYWxfaW5mbyxhZGRpdGlvbmFsX2luZm8uam9iX2Z1bmN0aW9uLGFkZGl0aW9uYWxfaW5mby5wcm9qZWN0ZWRQcm9kdWN0Q29udGV4dCxhZGRpdGlvbmFsX2luZm8ucm9sZXMsQWRvYmVJRCxhZG9iZWlvLmFwcHJlZ2lzdHJ5LnJlYWQsYWRvYmVpb19hcGksYXVkaWVuY2VtYW5hZ2VyX2FwaSxjcmVhdGl2ZV9jbG91ZCxtcHMsb3BlbmlkLG9yZy5yZWFkLHBwcy5yZWFkLHJlYWRfb3JnYW5pemF0aW9ucyxyZWFkX3BjLHJlYWRfcGMuYWNwLHJlYWRfcGMuZG1hX3RhcnRhbixzZXNzaW9uIn0.fQnQFmKLxE9XAWeD-UZ9bnF0f8QYofiRnDGEZCWX4ErAySB30T_op3AYyrfwaUgcyJZcF0wYzx_7-vyKu9cvO8Pgt_hQflB5uCq4cqG7SEvaLjVqbxMcnn-KirIfeWwE0fVpx101x-QlITgsLysGHv7Tj6UgQl0290hqW-c8jJwx7iXkl3ULNqlULxOWds3cGLoHoXz5mUzO2ZplYQgDKjr__6hkwXeWaysO65IdEOaU2hl_IXYA4Ux4VP3shN0ylYlp4Nnfae91VHEjL4kMukvxlp9wLI7dTqqJO9E9h0uH_0rG4BAtV9KcMfwK2ZVzFhBPJ-dx9o352roMCXAiMQ';
-const _apiKey = '3af35f9c2dac45008506d484731aba13';
-const _imsOrg = '120A56765E16E7BE0A495FEB@AdobeOrg';
-const _sbxName = 'kabbeysbox';
-// const editorProps = {
-//   'data-aue-resource': `urn:aemconnection:${content._path}/jcr:content/data/${content._variation}`,
-//   'data-aue-type': 'reference',
-//   'data-aue-filter': 'cf',
-//   'data-aue-label': 'Promo'
-// };
+const formatHtml = (actionResponse, conn) => {
+  const publishUrl = conn.sharedContext.get('aemHost').replace('author', 'publish');
+  const imageSizes = [
+    {
+      imageWidth: '2000px',
+      renditionName: 'web-optimized-xlarge.webp',
+    },
+    {
+      imageWidth: '1600px',
+      renditionName: 'web-optimized-xlarge.webp',
+    },
+    {
+      imageWidth: '1200px',
+      renditionName: 'web-optimized-xlarge.webp',
+    },
+    {
+      imageWidth: '1000px',
+      renditionName: 'web-optimized-large.webp',
+    },
+    {
+      imageWidth: '750px',
+      renditionName: 'web-optimized-large.webp',
+    },
+    {
+      imageWidth: '500px',
+      renditionName: 'web-optimized-large.webp',
+    },
+    {
+      imageWidth: '412px',
+      renditionName: 'web-optimized-large.webp',
+    },
+    {
+      size: '100vw',
+    }
+  ];
 
-const formatHtml = (actionResponse) => {
-  const _htmlOffer = `<div className='promo'>
+  const img = `<img loading='lazy' 
+    alt="${actionResponse.data.promoByPath.item.asset.description}"
+    title="${actionResponse.data.promoByPath.item.asset.title}"
+    src="${actionResponse.data.promoByPath.item.asset._publishUrl}" 
+    srcSet="${srcSet('https://' + publishUrl + actionResponse.data.promoByPath.item.asset._dynamicUrl, imageSizes)}"
+    sizes="${sizes(imageSizes)}"
+    data-aue-prop="asset" 
+    data-aue-type="media" 
+    data-aue-label='Asset'/>`;
+
+  const _htmlOffer = `<div className='promo' 
+    data-aue-resource="urn:aemconnection:${actionResponse.data.promoByPath.item._path}/jcr:content/data/${actionResponse.data.promoByPath.item._variation}"
+    data-aue-type="reference"
+    data-aue-filter="cf"
+    data-aue-label="Promo">
     <div className='promo-asset'>
-      Image
+      ${img}
     </div>
     <div className='promo-text'>
       <span data-aue-prop='title' data-aue-type='richtext' data-aue-label='Headline'>
@@ -65,13 +93,17 @@ const formatHtml = (actionResponse) => {
 };
 
 export default function () {
-  const [token, setToken] = useState(_token);
-  const [apiKey, setApiKey] = useState(_apiKey);
-  const [imsOrg, setIMSOrg] = useState(_imsOrg);
-  const [sandbox, setSandbox] = useState(_sbxName);
+  const {AIO_token, AIO_apiKey, AIO_imsOrg, AIO_sbxName} = process.env;
+  const [token, setToken] = useState(AIO_token);
+  const [apiKey, setApiKey] = useState(AIO_apiKey);
+  const [imsOrg, setIMSOrg] = useState(AIO_imsOrg);
+  const [sandbox, setSandbox] = useState(AIO_sbxName);
   const [appPath, setAppPath] = useState('https://bbw-demo.vercel.app/preview/');
   const [model, setModel] = useState('promo');
   const [fragmentPath, setFragmentPath] = useState('');
+  const [offerName, setOfferName] = useState('');
+  const [results, setResults] = useState('');
+  const [update, setUpdate] = useState(false);
 
   const [htmlOffer, setHtmlOffer] = useState('');
 
@@ -93,7 +125,6 @@ export default function () {
   const [actionResponse, setActionResponse] = useState();
 
   async function getFragmentDetails(conn) {
-    console.log('here');
     const { path } = await conn.host.contentFragment.getContentFragment();
 
     const headers = {
@@ -113,7 +144,8 @@ export default function () {
     try {
       const actionResponse = await actionWebInvoke(allActions[action], headers, params);
       setActionResponse(actionResponse);
-      setHtmlOffer(formatHtml(actionResponse));
+      setHtmlOffer(formatHtml(actionResponse, conn));
+      if(actionResponse.data.promoByPath.item.offerDelivery) setUpdate(true);
       console.log(`Response from ${action}:`, actionResponse);
     } catch (e) {
       console.error(e)
@@ -121,9 +153,15 @@ export default function () {
     conn.host.modal.set({ loading: false });
   };
 
-  async function sendOffer(conn, htmlOffer, actionResponse) {
+  async function sendOffer(conn, htmlOffer, actionResponse, offerName) {
     conn.host.modal.set({ loading: true });
-    console.log(htmlOffer);
+    
+    const _headers = {
+      'Authorization': 'Bearer ' + conn.sharedContext.get('auth').imsToken,
+      'x-gw-ims-org-id': conn.sharedContext.get('auth').imsOrg,
+      'Content-Type':'application/json'
+    };
+
     const headers = {
       'Authorization': 'Bearer ' + token,
       'x-gw-ims-org-id': imsOrg,
@@ -131,13 +169,19 @@ export default function () {
       'x-sandbox-name': sandbox
     };
 
-    console.log(actionResponse);
-    const {onDate, offDate} = actionResponse.data.promoByPath.item;
+    console.log(actionResponse.data.promoByPath.item);
+    const { onDate, offDate } = actionResponse.data.promoByPath.item;
     const params = {
       aemHost: `https://${conn.sharedContext.get('aemHost')}`,
       startDate: onDate,
       endDate: offDate,
-      offer: htmlOffer
+      offer: htmlOffer,
+      offerName: offerName,
+      fragmentPath: fragmentPath,
+      altHeaders: JSON.stringify(_headers),
+      model: model.path,
+      priority: actionResponse.data.promoByPath.item.priorityHighLow,
+      group: actionResponse.data.promoByPath.item.customerGroupAudience 
     };
 
     const action = 'send-offer';
@@ -145,8 +189,11 @@ export default function () {
     try {
       const actionResponse = await actionWebInvoke(allActions[action], headers, params);
       setActionResponse(actionResponse);
-      
-      console.log(`Response from ${action}:`, actionResponse);
+      const keys = Object.keys(actionResponse);
+      if(keys.includes('content') && keys.includes('cf')) setResults('Offer successfully shared!');
+      setUpdate(true);
+
+      console.log(`Response from ${action}:`, JSON.stringify(actionResponse));
       conn.host.modal.set({ loading: false });
     } catch (e) {
       console.error(e);
@@ -158,7 +205,9 @@ export default function () {
     (async () => {
       const guestConnection = await attach({ id: extensionId });
       const { model, path } = await guestConnection.host.contentFragment.getContentFragment();
-
+      console.log('------');
+      console.log(guestConnection.sharedContext.get('auth').imsToken);
+      console.log('------');
       setGuestConnection(guestConnection);
       setModel(model);
       setFragmentPath(path);
@@ -182,11 +231,13 @@ export default function () {
           <Item key='promo'>
             <View width="auto" justifySelf='center'>
               <Flex direction='column' width='100%' gap={'size-100'}>
+                <TextField onChange={setOfferName} value={offerName} label="Offer Name" />
                 <iframe style={{ height: '180px', width: '300px', border: '0' }} src={`${appPath}${model?.title?.toLowerCase()}${fragmentPath}`}></iframe>
                 <ButtonGroup>
-                  <Button variant="primary" onPress={() => sendOffer(guestConnection, htmlOffer, actionResponse)}>Share to Offer Descisioning</Button>
+                  <Button variant="primary" onPress={() => sendOffer(guestConnection, htmlOffer, actionResponse, offerName)}>{update ? 'Update Offer' : 'Share Offer'}</Button>
                   <Button variant="secondary" onPress={onCloseHandler}>Close</Button>
                 </ButtonGroup>
+                <Well>{results}</Well>
               </Flex>
             </View >
           </Item>
@@ -194,11 +245,11 @@ export default function () {
             <View width="100%">
               <Flex direction='column' width='100%' gap={"size-100"}>
                 <Form width='100%'>
-                  <TextArea onChange={setToken} value={token} label='Authentication Token' />
-                  <TextField onChange={setApiKey} value={apiKey} label="API Key" />
-                  <TextField onChange={setIMSOrg} value={imsOrg} label="IMS Org" />
-                  <TextField onChange={setSandbox} value={sandbox} label="Sandbox Name" />
-                  <TextField onChange={setAppPath} value={appPath} label="App Path" />
+                  <TextArea width='100%' onChange={setToken} value={token} label='Authentication Token' />
+                  <TextField width='100%' onChange={setApiKey} value={apiKey} label="API Key" />
+                  <TextField width='100%' onChange={setIMSOrg} value={imsOrg} label="IMS Org" />
+                  <TextField width='100%' onChange={setSandbox} value={sandbox} label="Sandbox Name" />
+                  <TextField width='100%' onChange={setAppPath} value={appPath} label="App Path" />
                 </Form>
               </Flex>
             </View >
@@ -206,7 +257,7 @@ export default function () {
           <Item key='html'>
             <View width="100%">
               <Flex direction='column' width='100%' gap={"size-100"}>
-                <TextArea value={htmlOffer} label='HTML Offer' />
+                <TextArea width='100%' value={htmlOffer} label='HTML Offer' />
               </Flex>
             </View >
           </Item>

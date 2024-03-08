@@ -31,7 +31,7 @@ async function main(params) {
     const errorMessage = checkMissingRequestInputs(params, requiredParams, requiredHeaders);
 
     if (errorMessage) return errorResponse(400, 'oops ' + errorMessage, logger);
-    //https://author-p124903-e1228403.adobeaemcloud.com/graphql/execute.json/bbw/promo-list;path=
+  
     const { aemHost, query, fragment, endpoint } = params;
     const token = getBearerToken(params);
     const apiEndpoint = `${aemHost}/graphql/execute.json/${endpoint}/${query};path=${fragment}`;
