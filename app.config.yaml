@@ -1,0 +1,26 @@
+extensions:
+  aem/cf-editor/1:
+    $include: src/aem-cf-editor-1/ext.config.yaml
+    runtimeManifest:
+      packages:
+        audience-targeting:
+          license: Apache-2.0
+          actions:
+            fragment-details:
+              function: actions/fragment-details/index.js
+              web: 'yes'
+              runtime: nodejs:18
+              inputs:
+                LOG_LEVEL: debug
+              annotations:
+                require-adobe-auth: false
+                final: true
+            send-offer:
+              function: actions/send-offer/index.js
+              web: 'yes'
+              runtime: nodejs:18
+              inputs:
+                LOG_LEVEL: debug
+              annotations:
+                require-adobe-auth: false
+                final: true
