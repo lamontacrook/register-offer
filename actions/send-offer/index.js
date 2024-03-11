@@ -34,8 +34,8 @@ function createPayload({ offerName, offer, startDate, endDate, group, priority }
       "placement": item,
       "components": [
         {
-          "type": "https://ns.adobe.com/experience/offer-management/content-component-text",
-          "format": "text/plain",
+          "type": "https://ns.adobe.com/experience/offer-management/content-component-html",
+          "format": "text/html",
           "language": [
             "en-us"
           ],
@@ -55,9 +55,9 @@ function createPayload({ offerName, offer, startDate, endDate, group, priority }
       "profileConstraintType": "none"
     },
     "rank": {
-      "priority": 0
+      "priority": priority.includes('low') ? 5 : 10
     },
-    "xdm:characteristics": {
+    "characteristics": {
       "category": group,
       "priority": priority
     },
@@ -86,7 +86,6 @@ async function main(params) {
 
   try {
     logger.info('Calling the main action');
-    // logger.debug(stringParameters(params));
 
     const requiredParams = ['startDate', 'endDate', 'offer', 'offerName', 'fragmentPath', 'altHeaders', 'aemHost', 'model', 'priority', 'group'];
     const requiredHeaders = ['Authorization'];
@@ -106,7 +105,7 @@ async function main(params) {
 
     const payload = createPayload(params);
 
-    logger.info(JSON.stringify(payload));
+    // logger.info(JSON.stringify(payload));
 
     // const _ret = {
     //   statusCode: 200,
